@@ -1,4 +1,4 @@
-# sheetmenu
+# cell-adapter
 Simple adapter for speedy implementation list of items
 
 [![](https://jitpack.io/v/whalemare/cell-adapter.svg)](https://jitpack.io/#whalemare/cell-adapter)
@@ -20,9 +20,14 @@ Use it in Kotlin with `apply` extension
 
 Your need to write you own implementation of Cell like this
 ```kotlin
+/** 
+* 1. Your own custom implementation ViewHolder from Cell.ViewHolder
+* 2. Some data class
+* 3. Layout for inflate view item
+*/
 class PersonCell : Cell<PersonCell.ViewHolder, Person>(R.layout.cell_person) {
 
-    // Bind your data this
+    // Bind your data here
     override fun bind(holder: ViewHolder, item: Person) {
         holder.textName.text = item.name
     }
@@ -54,7 +59,7 @@ allprojects {
 }
 ```
 
-Include dependency with `BottomSheet` in your app.gradle file with:
+Include dependency with `cell-adapter` in your app.gradle file with:
 
 ```groovy
 compile 'com.github.whalemare:cell-adapter:1.0'
