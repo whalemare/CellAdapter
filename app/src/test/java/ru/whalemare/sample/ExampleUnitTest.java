@@ -1,4 +1,4 @@
-package ru.whalemare.celladapter;
+package ru.whalemare.sample;
 
 import org.junit.Test;
 

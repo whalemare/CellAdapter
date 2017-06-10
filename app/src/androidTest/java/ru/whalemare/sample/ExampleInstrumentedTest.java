@@ -1,4 +1,4 @@
-package ru.whalemare.celladapter;
+package ru.whalemare.sample;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
