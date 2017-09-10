@@ -41,6 +41,4 @@ open class CellAdapter<V : Cell.ViewHolder, D>(val cell: Cell<V, D>,
         notifyDataSetChanged()
     }
     //endregion
-    // check master build
-    // new tag 13
 }

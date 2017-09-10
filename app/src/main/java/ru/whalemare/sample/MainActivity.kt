@@ -4,9 +4,14 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import ru.whalemare.celladapter.CellAdapter
+import ru.whalemare.celladapter.DelegateCellAdapter
+import ru.whalemare.celladapter.cell.Cell
+import ru.whalemare.celladapter.cell.DelegateCell
+import ru.whalemare.sample.`object`.Animal
 import ru.whalemare.sample.`object`.Person
-import ru.whalemare.sample.cell.PersonCell
+import ru.whalemare.sample.cell.AnimalDelegateCell
+import ru.whalemare.sample.cell.PersonDelegateCell
+import java.util.*
 
 /**
  * @since 2017
@@ -18,12 +23,32 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         val recycler = findViewById(R.id.recycler_view) as RecyclerView
-        val list = (0..100).map { Person("Name $it") }.toMutableList()
+
+        val persons = (0..1000).map {
+            Person("Person $it")
+        }.toMutableList()
+
+        val animals = (0..2000).map {
+            Animal("Animal $it")
+        }.toList()
+
+        val list = mutableListOf<Any>()
+        list.addAll(persons)
+        list.addAll(animals)
+        Collections.shuffle(list)
+
+        val listDelegates = listOf(AnimalDelegateCell(), PersonDelegateCell())
 
         recycler.apply {
-            adapter = CellAdapter(PersonCell(), list)
-            layoutManager = LinearLayoutManager(this@MainActivity, LinearLayoutManager.VERTICAL, false)
+            adapter = DelegateCellAdapter(listDelegates as List<DelegateCell<Cell.ViewHolder, Any>>, list)
+            layoutManager = LinearLayoutManager(this@MainActivity,
+                    LinearLayoutManager.VERTICAL,
+                    false
+            )
         }
     }
 }
+
+
+
 

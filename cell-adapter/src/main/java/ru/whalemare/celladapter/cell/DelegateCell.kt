@@ -10,18 +10,23 @@ import android.view.ViewGroup
  * @since 2017
  * @author Anton Vlasov - whalemare
  */
-abstract class Cell<V : Cell.ViewHolder, in D>(@LayoutRes val layoutRes: Int) {
+abstract class DelegateCell<V : Cell.ViewHolder, in D : Any>(@LayoutRes val layoutRes: Int) {
 
-    open public class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    /**
+     * Called to determine the correspondences between the data-object and the cell
+     */
+    abstract fun isViewType(item: Any): Boolean
+
+    open class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         constructor(parent: ViewGroup, layoutRes: Int) :
                 this(LayoutInflater.from(parent.context).inflate(layoutRes, parent, false))
     }
 
     abstract fun bind(holder: V, item: D)
 
-    abstract fun viewHolder(parent: ViewGroup, viewType: Int): V
+    abstract fun viewHolder(parent: ViewGroup): V
 
-    protected fun makeView(parent: ViewGroup, viewType: Int): View {
+    protected fun makeView(parent: ViewGroup): View {
         return LayoutInflater.from(parent.context).inflate(layoutRes, parent, false)
     }
 }
