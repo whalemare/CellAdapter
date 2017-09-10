@@ -24,11 +24,11 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         val recycler = findViewById(R.id.recycler_view) as RecyclerView
 
-        val persons = (0..1000).map {
+        val persons = (0..3).map {
             Person("Person $it")
         }.toMutableList()
 
-        val animals = (0..2000).map {
+        val animals = (0..3).map {
             Animal("Animal $it")
         }.toList()
 
@@ -39,12 +39,17 @@ class MainActivity : AppCompatActivity() {
 
         val listDelegates = listOf(AnimalDelegateCell(), PersonDelegateCell())
 
+        val mAdapter = DelegateCellAdapter(listDelegates as List<DelegateCell<Cell.ViewHolder, Any>>, list)
         recycler.apply {
-            adapter = DelegateCellAdapter(listDelegates as List<DelegateCell<Cell.ViewHolder, Any>>, list)
+            adapter = mAdapter
             layoutManager = LinearLayoutManager(this@MainActivity,
                     LinearLayoutManager.VERTICAL,
                     false
             )
+        }
+
+        findViewById(R.id.fab).setOnClickListener {
+            mAdapter.addItem(Person("Person added ${System.currentTimeMillis()}"))
         }
     }
 }

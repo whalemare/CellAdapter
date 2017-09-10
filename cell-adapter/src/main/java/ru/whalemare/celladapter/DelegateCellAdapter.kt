@@ -46,20 +46,24 @@ class DelegateCellAdapter(
 
     //region api
     open fun addItems(list: List<Any>) {
-        val rangeStart = items.size
+        val rangeStart = list.size
         items.addAll(list)
-        notifyItemRangeChanged(rangeStart, items.size)
+        notifyItemRangeInserted(items.size - rangeStart, items.size)
+    }
+
+    open fun addItem(item: Any) {
+        val rangeStart = 1
+        items.add(item)
+        notifyItemRangeInserted(items.size - rangeStart, items.size)
     }
 
     open fun setItems(list: List<Any>) {
-        val diffUtils = DiffUtil.calculateDiff(SimpleCallback(items, list))
-        diffUtils.dispatchUpdatesTo(this)
-
         items.clear()
         items.addAll(list)
+        notifyItemRangeInserted(0, items.size)
     }
 
-    open fun clear(list: List<Any>) {
+    open fun clear() {
         items.clear()
         notifyDataSetChanged()
     }
