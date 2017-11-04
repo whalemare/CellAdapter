@@ -25,7 +25,7 @@ open class CellAdapter<V : Cell.ViewHolder, D>(val cell: Cell<V, D>,
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): V {
-        return cell.viewHolder(parent, viewType)
+        return cell.viewHolder(parent)
     }
 
     //region api

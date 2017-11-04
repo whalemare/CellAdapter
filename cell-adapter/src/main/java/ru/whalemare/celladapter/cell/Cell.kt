@@ -12,16 +12,16 @@ import android.view.ViewGroup
  */
 abstract class Cell<V : Cell.ViewHolder, in D>(@LayoutRes val layoutRes: Int) {
 
-    open public class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    open class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         constructor(parent: ViewGroup, layoutRes: Int) :
                 this(LayoutInflater.from(parent.context).inflate(layoutRes, parent, false))
     }
 
     abstract fun bind(holder: V, item: D)
 
-    abstract fun viewHolder(parent: ViewGroup, viewType: Int): V
+    abstract fun viewHolder(parent: ViewGroup): V
 
-    protected fun makeView(parent: ViewGroup, viewType: Int): View {
+    protected fun makeView(parent: ViewGroup): View {
         return LayoutInflater.from(parent.context).inflate(layoutRes, parent, false)
     }
 }

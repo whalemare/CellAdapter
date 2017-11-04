@@ -5,24 +5,25 @@ import android.view.ViewGroup
 import android.widget.TextView
 import ru.whalemare.celladapter.cell.Cell
 import ru.whalemare.sample.R
-import ru.whalemare.sample.`object`.Person
+import ru.whalemare.sample.`object`.Animal
 
 /**
  * @since 2017
  * @author Anton Vlasov - whalemare
  */
-class PersonCell : Cell<PersonCell.ViewHolder, Person>(R.layout.cell_person) {
+class AnimalCell : Cell<AnimalCell.ViewHolder, Animal>(R.layout.cell_person) {
 
-    override fun bind(holder: ViewHolder, item: Person) {
+    override fun bind(holder: AnimalCell.ViewHolder, item: Animal) {
         holder.textName.text = item.name
     }
 
-    override fun viewHolder(parent: ViewGroup): ViewHolder {
+    override fun viewHolder(parent: ViewGroup): AnimalCell.ViewHolder {
         return ViewHolder(makeView(parent))
     }
 
     class ViewHolder(view: View) : Cell.ViewHolder(view) {
         val textName = view.findViewById(R.id.text_name) as TextView
     }
+
 
 }

@@ -49,7 +49,9 @@ class MainActivity : AppCompatActivity() {
         }
 
         findViewById(R.id.fab).setOnClickListener {
-            mAdapter.addItem(Person("Person added ${System.currentTimeMillis()}"))
+            mAdapter.addItems(listOf(
+                    Person("Person added ${System.currentTimeMillis()}")
+            ))
         }
     }
 }

@@ -1,6 +1,5 @@
 package ru.whalemare.celladapter.cell
 
-import android.support.annotation.LayoutRes
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
@@ -10,23 +9,26 @@ import android.view.ViewGroup
  * @since 2017
  * @author Anton Vlasov - whalemare
  */
-abstract class DelegateCell<V : Cell.ViewHolder, in D : Any>(@LayoutRes val layoutRes: Int) {
+abstract class DelegateCell<V : Cell.ViewHolder, in D : Any>(protected val cell: Cell<V, D>) {
 
     /**
      * Called to determine the correspondences between the data-object and the cell
      */
     abstract fun isViewType(item: Any): Boolean
 
-    open class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        constructor(parent: ViewGroup, layoutRes: Int) :
-                this(LayoutInflater.from(parent.context).inflate(layoutRes, parent, false))
+    open fun bind(holder: V, item: D) {
+        cell.bind(holder, item)
     }
 
-    abstract fun bind(holder: V, item: D)
+    open fun viewHolder(parent: ViewGroup): V {
+        return cell.viewHolder(parent)
+    }
 
-    abstract fun viewHolder(parent: ViewGroup): V
+    open protected fun makeView(parent: ViewGroup): View {
+        return LayoutInflater.from(parent.context).inflate(cell.layoutRes, parent, false)
+    }
 
-    protected fun makeView(parent: ViewGroup): View {
-        return LayoutInflater.from(parent.context).inflate(layoutRes, parent, false)
+    open class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+
     }
 }
