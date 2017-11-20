@@ -4,14 +4,14 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import ru.whalemare.celladapter.DelegateCellAdapter
-import ru.whalemare.celladapter.cell.Cell
-import ru.whalemare.celladapter.cell.DelegateCell
+import android.widget.LinearLayout
+import ru.whalemare.celladapter.CellAdapter
+import ru.whalemare.celladapter.cell.BaseCell
+import ru.whalemare.celladapter.cell.CellDelegate
 import ru.whalemare.sample.`object`.Animal
 import ru.whalemare.sample.`object`.Person
-import ru.whalemare.sample.cell.AnimalDelegateCell
-import ru.whalemare.sample.cell.PersonDelegateCell
-import java.util.*
+import ru.whalemare.sample.cell.AnimalBaseCell
+import ru.whalemare.sample.cell.PersonBaseCell
 
 /**
  * @since 2017
@@ -24,28 +24,31 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         val recycler = findViewById(R.id.recycler_view) as RecyclerView
 
-        val persons = (0..3).map {
+        val persons = (0..15).map {
             Person("Person $it")
         }.toMutableList()
 
-        val animals = (0..3).map {
+        val animals = (16..30).map {
             Animal("Animal $it")
         }.toList()
 
         val list = mutableListOf<Any>()
         list.addAll(persons)
         list.addAll(animals)
-        Collections.shuffle(list)
 
-        val listDelegates = listOf(AnimalDelegateCell(), PersonDelegateCell())
+        val listDelegates = listOf(AnimalBaseCell(), PersonBaseCell()) as List<CellDelegate<BaseCell.ViewHolder, Any>>
 
-        val mAdapter = DelegateCellAdapter(listDelegates as List<DelegateCell<Cell.ViewHolder, Any>>, list)
+//        val mAdapter = CellAdapterDelegate(listDelegates)
+        val mAdapter = CellAdapter(PersonBaseCell())
         recycler.apply {
             adapter = mAdapter
             layoutManager = LinearLayoutManager(this@MainActivity,
                     LinearLayoutManager.VERTICAL,
                     false
             )
+            val button = CounterView(context)
+            button.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
+            addItemDecoration(HeaderViewDecoration(button))
         }
 
         findViewById(R.id.fab).setOnClickListener {

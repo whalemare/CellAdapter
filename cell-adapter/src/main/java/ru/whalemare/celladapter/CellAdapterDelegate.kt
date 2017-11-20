@@ -3,18 +3,18 @@ package ru.whalemare.celladapter
 import android.support.v7.util.DiffUtil
 import android.support.v7.widget.RecyclerView
 import android.view.ViewGroup
-import ru.whalemare.celladapter.cell.Cell
-import ru.whalemare.celladapter.cell.DelegateCell
+import ru.whalemare.celladapter.cell.BaseCell
+import ru.whalemare.celladapter.cell.CellDelegate
 import java.lang.reflect.ParameterizedType
 
 /**
  * @since 2017
  * @author Anton Vlasov - whalemare
  */
-open class DelegateCellAdapter(
-        private val cells: List<DelegateCell<Cell.ViewHolder, Any>>,
+open class CellAdapterDelegate(
+        private val cells: List<CellDelegate<BaseCell.ViewHolder, Any>>,
         protected val items: MutableList<Any> = mutableListOf()
-) : RecyclerView.Adapter<Cell.ViewHolder>() {
+) : RecyclerView.Adapter<BaseCell.ViewHolder>() {
 
     override fun getItemId(position: Int): Long {
         return items[position].hashCode().toLong()
@@ -35,20 +35,20 @@ open class DelegateCellAdapter(
         return items.size
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Cell.ViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseCell.ViewHolder {
         return getDelegate(viewType).viewHolder(parent)
     }
 
-    override fun onBindViewHolder(holder: Cell.ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: BaseCell.ViewHolder, position: Int) {
         val item = items[position]
         getDelegate(item).bind(holder, item)
     }
 
-    protected open fun getDelegate(item: Any): DelegateCell<Cell.ViewHolder, Any> {
+    protected open fun getDelegate(item: Any): CellDelegate<BaseCell.ViewHolder, Any> {
         return cells.first { it.isViewType(item) }
     }
 
-    protected open fun getDelegate(viewType: Int): DelegateCell<Cell.ViewHolder, Any> {
+    protected open fun getDelegate(viewType: Int): CellDelegate<BaseCell.ViewHolder, Any> {
         return cells[viewType]
     }
 

@@ -2,14 +2,15 @@ package ru.whalemare.celladapter
 
 import android.support.v7.widget.RecyclerView
 import android.view.ViewGroup
+import ru.whalemare.celladapter.cell.BaseCell
 import ru.whalemare.celladapter.cell.Cell
 
 /**
  * @since 2017
  * @author Anton Vlasov - whalemare
  */
-open class CellAdapter<V : Cell.ViewHolder, D>(val cell: Cell<V, D>,
-                                               val list: MutableList<D> = arrayListOf())
+open class CellAdapter<V : BaseCell.ViewHolder, D>(val cell: Cell<V, D>,
+                                                   val list: MutableList<D> = arrayListOf())
     : RecyclerView.Adapter<V>() {
 
     override fun getItemCount(): Int {
