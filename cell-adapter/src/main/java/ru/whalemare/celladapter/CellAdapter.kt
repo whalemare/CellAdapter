@@ -1,5 +1,6 @@
 package ru.whalemare.celladapter
 
+import android.support.v7.util.DiffUtil
 import android.support.v7.widget.RecyclerView
 import android.view.ViewGroup
 import ru.whalemare.celladapter.cell.BaseCell
@@ -36,10 +37,55 @@ open class CellAdapter<V : BaseCell.ViewHolder, D>(val cell: Cell<V, D>,
         notifyItemRangeChanged(rangeStart, items.size)
     }
 
-    open fun setItems(items: List<D>) {
+    open fun setItems(items: List<D>, animated: Boolean = false) {
+        val result = DiffUtil.calculateDiff(object : DiffUtil.Callback() {
+            override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+                return list[oldItemPosition]?.hashCode() == items[newItemPosition]?.hashCode()
+            }
+
+            override fun getOldListSize(): Int {
+                return list.size
+            }
+
+            override fun getNewListSize(): Int {
+                return items.size
+            }
+
+            override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+                return list[oldItemPosition]?.hashCode() == items[newItemPosition]?.hashCode()
+            }
+
+        })
+        result.dispatchUpdatesTo(this)
         list.clear()
         list.addAll(items)
-        notifyDataSetChanged()
     }
+
+    open fun setItems(items: List<D>,
+                      areItemsTheSame: (old: D, new: D) -> Boolean,
+                      areContentsTheSame: (old: D, new: D) -> Boolean) {
+        val result = DiffUtil.calculateDiff(object : DiffUtil.Callback() {
+            override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+                return areItemsTheSame.invoke(list[oldItemPosition], items[newItemPosition])
+            }
+
+            override fun getOldListSize(): Int {
+                return list.size
+            }
+
+            override fun getNewListSize(): Int {
+                return items.size
+            }
+
+            override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+                return areContentsTheSame.invoke(list[oldItemPosition], items[newItemPosition])
+            }
+
+        })
+        result.dispatchUpdatesTo(this)
+        list.clear()
+        list.addAll(items)
+    }
+
     //endregion
 }
