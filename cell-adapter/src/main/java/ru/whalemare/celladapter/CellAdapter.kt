@@ -38,27 +38,33 @@ open class CellAdapter<V : BaseCell.ViewHolder, D>(val cell: Cell<V, D>,
     }
 
     open fun setItems(items: List<D>, animated: Boolean = false) {
-        val result = DiffUtil.calculateDiff(object : DiffUtil.Callback() {
-            override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-                return list[oldItemPosition]?.hashCode() == items[newItemPosition]?.hashCode()
-            }
+        if (animated) {
+            val result = DiffUtil.calculateDiff(object : DiffUtil.Callback() {
+                override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+                    return list[oldItemPosition]?.hashCode() == items[newItemPosition]?.hashCode()
+                }
 
-            override fun getOldListSize(): Int {
-                return list.size
-            }
+                override fun getOldListSize(): Int {
+                    return list.size
+                }
 
-            override fun getNewListSize(): Int {
-                return items.size
-            }
+                override fun getNewListSize(): Int {
+                    return items.size
+                }
 
-            override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-                return list[oldItemPosition]?.hashCode() == items[newItemPosition]?.hashCode()
-            }
+                override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+                    return list[oldItemPosition]?.hashCode() == items[newItemPosition]?.hashCode()
+                }
 
-        })
-        result.dispatchUpdatesTo(this)
+            })
+            result.dispatchUpdatesTo(this)
+        }
         list.clear()
         list.addAll(items)
+
+        if (!animated) {
+            notifyDataSetChanged()
+        }
     }
 
     open fun setItems(items: List<D>,
