@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.view.View
 import android.widget.LinearLayout
 import ru.whalemare.celladapter.CellAdapter
 import ru.whalemare.celladapter.cell.BaseCell
@@ -22,7 +23,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        val recycler = findViewById(R.id.recycler_view) as RecyclerView
+        val recycler = findViewById<RecyclerView>(R.id.recycler_view)
 
         val persons = (0..15).map {
             Person("Person $it")
@@ -43,17 +44,17 @@ class MainActivity : AppCompatActivity() {
         recycler.apply {
             adapter = mAdapter
             layoutManager = LinearLayoutManager(this@MainActivity,
-                    LinearLayoutManager.VERTICAL,
-                    false
+                LinearLayoutManager.VERTICAL,
+                false
             )
             val button = CounterView(context)
             button.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
             addItemDecoration(HeaderViewDecoration(button))
         }
 
-        findViewById(R.id.fab).setOnClickListener {
+        findViewById<View>(R.id.fab).setOnClickListener {
             mAdapter.addItems(listOf(
-                    Person("Person added ${System.currentTimeMillis()}")
+                Person("Person added ${System.currentTimeMillis()}")
             ))
         }
     }
