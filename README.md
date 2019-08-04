@@ -52,7 +52,7 @@ allprojects {
 Include dependency with `cell-adapter` in your app.gradle file with:
 
 ```groovy
-compile 'com.github.whalemare:cell-adapter:2.0'
+implementation 'com.github.whalemare:cell-adapter:2.0'
 ```
 
 
