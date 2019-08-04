@@ -7,8 +7,7 @@ import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.widget.LinearLayout
 import ru.whalemare.celladapter.CellAdapter
-import ru.whalemare.celladapter.cell.BaseCell
-import ru.whalemare.celladapter.cell.CellDelegate
+import ru.whalemare.celladapter.ext.cells
 import ru.whalemare.sample.`object`.Animal
 import ru.whalemare.sample.`object`.Person
 import ru.whalemare.sample.cell.AnimalBaseCell
@@ -37,10 +36,8 @@ class MainActivity : AppCompatActivity() {
         list.addAll(persons)
         list.addAll(animals)
 
-        val listDelegates = listOf(AnimalBaseCell(), PersonBaseCell()) as List<CellDelegate<BaseCell.ViewHolder, Any>>
-
-//        val mAdapter = CellAdapterDelegate(listDelegates)
-        val mAdapter = CellAdapter(PersonBaseCell())
+//        val mAdapter = CellAdapter(AnimalBaseCell())
+        val mAdapter = CellAdapter(cells(AnimalBaseCell(), PersonBaseCell()), list)
         recycler.apply {
             adapter = mAdapter
             layoutManager = LinearLayoutManager(this@MainActivity,

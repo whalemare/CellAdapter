@@ -9,41 +9,31 @@ Usage
 Use it in Kotlin with `apply` extension
 
 ```kotlin
-    fun buildRecycler(list: List<Person>) {
-        val recycler = findViewById(R.id.recycler_view) as RecyclerView
-        recycler.apply {
-            adapter = CellAdapter(PersonCell(), list)
-            layoutManager = LinearLayoutManager(this@MainActivity, LinearLayoutManager.VERTICAL, false)
-        }
-    }
+val recycler = findViewById(R.id.recycler_view) as RecyclerView
+recycler.adapter = CellAdapter(cells(AnimalBaseCell(), PersonBaseCell()), items)
+recycler.layoutManager = LinearLayoutManager(this@MainActivity, LinearLayoutManager.VERTICAL, false)
 ```
 
 Your need to write you own implementation of Cell like this
 ```kotlin
-/** 
-* 1. Your own custom implementation ViewHolder from Cell.ViewHolder
-* 2. Some data class
-* 3. Layout for inflate view item
-*/
-class PersonCell : Cell<PersonCell.ViewHolder, Person>(R.layout.cell_person) {
-
-    // Bind your data here
-    override fun bind(holder: ViewHolder, item: Person) {
-        holder.textName.text = item.name
-    }
-
-    // Use function makeView() for create view
-    override fun viewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        return ViewHolder(makeView(parent, viewType))
-    }
-
-    // Create ViewHolder extended from Cell.ViewHolder
-    // Find your views here
-    class ViewHolder(view: View) : Cell.ViewHolder(view) {
-        val textName = view.findViewById(R.id.text_name) as TextView
+class PersonBaseCell : CellDelegate<Person>(R.layout.cell_person) {
+    override fun isViewType(value: Any) = value is Person // define some logic for indeterminate that it is your view for render
+    
+    override fun bind(holder: ru.whalemare.celladapter.ViewHolder, item: Person) {
+        holder.setText(R.id.text_name, item.name)
     }
 }
 ```
+
+Logic for checking view for render can be more complicated, than just check instance of view. 
+For example:
+```kotlin
+    override fun isViewType(value: Any) {
+        return (value as Person)?.name?.length > 0
+    }
+```
+
+That is all.
 
 Install
 -------

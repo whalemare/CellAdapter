@@ -3,95 +3,105 @@ package ru.whalemare.celladapter
 import android.support.v7.util.DiffUtil
 import android.support.v7.widget.RecyclerView
 import android.view.ViewGroup
-import ru.whalemare.celladapter.cell.BaseCell
-import ru.whalemare.celladapter.cell.Cell
+import ru.whalemare.celladapter.cell.CellDelegate
+import ru.whalemare.celladapter.ext.SimpleCallback
+import ru.whalemare.celladapter.ext.cells
+
 
 /**
- * @since 2017
+ * @since 2018
  * @author Anton Vlasov - whalemare
  */
-open class CellAdapter<V : BaseCell.ViewHolder, D>(val cell: Cell<V, D>,
-                                                   val list: MutableList<D> = arrayListOf())
-    : RecyclerView.Adapter<V>() {
+open class CellAdapter(
+    private val cells: MutableList<CellDelegate<Any>> = mutableListOf(),
+    protected val items: MutableList<Any> = mutableListOf()
+) : RecyclerView.Adapter<ViewHolder>() {
 
-    override fun getItemCount(): Int {
-        return list.size
-    }
+    constructor(cell: CellDelegate<*>) : this(cells(cell))
 
-    open protected fun getItem(position: Int): D {
-        return list[position]
-    }
+    var isEnabledDiffUtil: Boolean = true
 
-    override fun onBindViewHolder(holder: V, position: Int) {
-        cell.bind(holder, getItem(position))
-    }
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): V {
-        return cell.viewHolder(parent)
-    }
-
-    //region api
-    open fun addItems(items: List<D>) {
-        val rangeStart = list.size
-        list.addAll(items)
-        notifyItemRangeChanged(rangeStart, items.size)
-    }
-
-    open fun setItems(items: List<D>, animated: Boolean = false) {
-        if (animated) {
-            val result = DiffUtil.calculateDiff(object : DiffUtil.Callback() {
-                override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-                    return list[oldItemPosition]?.hashCode() == items[newItemPosition]?.hashCode()
-                }
-
-                override fun getOldListSize(): Int {
-                    return list.size
-                }
-
-                override fun getNewListSize(): Int {
-                    return items.size
-                }
-
-                override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-                    return list[oldItemPosition]?.hashCode() == items[newItemPosition]?.hashCode()
-                }
-
-            })
-            result.dispatchUpdatesTo(this)
+    override fun getItemViewType(position: Int): Int {
+        val item = items[position]
+        val viewType = cells.indexOfFirst { it.isViewType(item) }
+        if (viewType < 0) {
+            throw UnsupportedOperationException("You need pass delegate cell for class ${items[position].javaClass}" +
+                    ", but exists only ${cells.map { it.typeToString() }}")
         }
-        list.clear()
-        list.addAll(items)
+        return viewType
+    }
 
-        if (!animated) {
-            notifyDataSetChanged()
+    override fun onViewDetachedFromWindow(holder: ViewHolder) {
+        super.onViewDetachedFromWindow(holder)
+        if (holder.adapterPosition != RecyclerView.NO_POSITION) {
+            cells[holder.viewType].unbind(holder)
         }
     }
 
-    open fun setItems(items: List<D>,
-                      areItemsTheSame: (old: D, new: D) -> Boolean,
-                      areContentsTheSame: (old: D, new: D) -> Boolean) {
-        val result = DiffUtil.calculateDiff(object : DiffUtil.Callback() {
-            override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-                return areItemsTheSame.invoke(list[oldItemPosition], items[newItemPosition])
-            }
-
-            override fun getOldListSize(): Int {
-                return list.size
-            }
-
-            override fun getNewListSize(): Int {
-                return items.size
-            }
-
-            override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-                return areContentsTheSame.invoke(list[oldItemPosition], items[newItemPosition])
-            }
-
-        })
-        result.dispatchUpdatesTo(this)
-        list.clear()
-        list.addAll(items)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        val cell = cells[viewType]
+        return cell.viewHolder(parent, viewType)
     }
 
-    //endregion
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        val item = items[position]
+        getDelegate(item).bind(holder, item)
+    }
+
+    protected open fun getDelegate(item: Any): CellDelegate<Any> {
+        return cells.first { it.isViewType(item) }
+    }
+
+    open fun addItem(element: Any) {
+        items.add(element)
+        notifyItemInserted(items.size)
+    }
+
+    open fun addItems(list: List<Any>) {
+        val rangeStart = items.size
+        items.addAll(list)
+        notifyItemRangeInserted(rangeStart, list.size)
+    }
+
+    open fun setItems(list: List<Any>) {
+        if (isEnabledDiffUtil) {
+            val diffUtils = DiffUtil.calculateDiff(SimpleCallback(items, list))
+            diffUtils.dispatchUpdatesTo(this)
+        }
+
+        items.clear()
+        items.addAll(list)
+
+        if (!isEnabledDiffUtil) {
+            notifyItemRangeChanged(0, items.size)
+        }
+    }
+
+    open fun clear(list: List<Any>) {
+        items.clear()
+        notifyDataSetChanged()
+    }
+
+    /**
+     * Move item [from] position [to] position
+     */
+    open fun move(from: Int, to: Int) {
+        val value = items.removeAt(from)
+        items.add(to, value)
+        notifyItemMoved(from, to)
+    }
+
+    open fun getItemByPosition(layoutPosition: Int): Any {
+        return items[layoutPosition]
+    }
+
+    override fun getItemCount(): Int = items.size
+
+    fun findIndexByItem(item: Any): Int {
+        return items.indexOfFirst { it == item }
+    }
+
+    companion object {
+        const val KEY_CELL_VIEWTYPE = "key_cell_viewtype"
+    }
 }
